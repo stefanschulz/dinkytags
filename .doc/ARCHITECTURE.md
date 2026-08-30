@@ -305,8 +305,10 @@ Every `PLG_SYSTEM_DINKYTAGS_PARAM_*` key referenced by the XML must exist in **b
 ## Compatibility
 
 - **PHP** 8.2+ (`match`, readonly promoted properties, `str_starts_with`, enums not used).
+  Functionally verified on 8.3 and 8.4.
 - **Joomla** 5.1+ and 6.x. Namespaced plugin only (`services/provider.php` +
-  `SubscriberInterface`), no legacy `JPlugin`.
+  `SubscriberInterface`), no legacy `JPlugin`. Functionally verified on 5.4.x and
+  **6.1.3** (see Testing).
 - `build.xml`'s `targetplatform` regex (`(5.(1|2|3|4|5)|6.(0|1|2|3))`) is the **single
   source of truth** for what the update server advertises. It does not gate
   installation; keep it in sync by hand when a new Joomla minor ships.
@@ -396,6 +398,22 @@ Verified against the spec section 7 matrix:
 - **Context detection** — the initial "menu-less article classified as home" bug was
   found here and fixed (see the context-detection section).
 - **No PHP notices / warnings** in the Apache error log across the whole run.
+
+### Joomla 6.x pass (2026-08, Joomla 6.1.3 / PHP 8.4.25)
+
+The same spec section 7 matrix re-run on a disposable `joomla:6-apache` +
+`mariadb:11.4` stack: install (`extension:install`), the config form
+(`description_source` select, `excluded_menu_items` fancy multi-select, switchers),
+and all 11 matrix pages behave **identically to Joomla 5** — one `og:image` per page,
+correct `og:type` / `twitter:card` / `og:url` / query stripping / skip conditions,
+zero PHP notices. `services/provider.php` DI, `onBeforeCompileHead`,
+`bootComponent('com_content')` and the document API are unchanged on 6.1.
+
+### Live delta — empulsiv
+
+TAGZ 6.0.3 FREE replaced by this plugin on the empulsiv instance (Joomla 5.4.8):
+baseline capture, install, config, and a per-page comparison are recorded in that
+project's `DEPLOYMENT.md` §H.
 
 External validators for a real rollout: Facebook Sharing Debugger, X Card Validator,
 LinkedIn Post Inspector, opengraph.xyz; quick check

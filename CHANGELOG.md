@@ -18,6 +18,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   those produced duplicate `og:title` / `og:image` / etc. when the component was
   not in `excluded_components`. Kept custom values also feed the Twitter block.
 
+### Verified
+- Full spec section 7 matrix re-run on **Joomla 6.1.3 / PHP 8.4.25** (disposable
+  Docker stack): install, config form and all 11 pages behave identically to
+  Joomla 5 — one `og:image` per page, correct `og:type` / `twitter:card` /
+  `og:url` / skip conditions, zero PHP notices. Confirms the 5.1+ / 6.x claim.
+
 ### Fixed (code review follow-up)
 - `og:locale` (auto): a language tag with a script subtag (`zh-Hans-CN`) produced
   the invalid `zh_Hans_CN`; it is now normalised to `language_TERRITORY`
