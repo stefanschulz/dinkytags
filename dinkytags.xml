@@ -158,7 +158,8 @@
                        label="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_MENU_ITEMS_LABEL"
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_MENU_ITEMS_DESC"
                        multiple="true"
-                       layout="joomla.form.field.list-fancy-select"
+                       filter="intarray"
+                       layout="joomla.form.field.groupedlist-fancy-select"
                        hint="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_MENU_ITEMS_HINT"/>
 
                 <field name="debug"
