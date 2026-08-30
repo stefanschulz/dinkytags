@@ -709,3 +709,6 @@
 
 # --- IDE project files (not tracked, mirrors the cuterweblinks repo) ---
 /.idea/
+
+# --- local Docker test stack (see .docker/README.md) ---
+/.docker/
