@@ -18,6 +18,23 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   those produced duplicate `og:title` / `og:image` / etc. when the component was
   not in `excluded_components`. Kept custom values also feed the Twitter block.
 
+### Fixed (code review follow-up)
+- `og:locale` (auto): a language tag with a script subtag (`zh-Hans-CN`) produced
+  the invalid `zh_Hans_CN`; it is now normalised to `language_TERRITORY`
+  (`zh_CN`). Two-segment tags are unchanged (`de-DE` → `de_DE`).
+- The custom-`<meta>` scan for `override_mode` is now tolerant of attribute order,
+  single/double quotes and whitespace around `=` (it was `property=` before
+  `content=` only), so an extension using a different-but-valid markup no longer
+  slips past and gets duplicated.
+- `twitter:card` now reads a kept extension's own `og:image:width` (when it
+  published one next to its `og:image`) instead of always assuming an unknown
+  width.
+- `Helper\Text::excerpt()` drops `<script>` / `<style>` blocks (content included)
+  before `strip_tags()`, which would otherwise leave their text in the excerpt.
+- `Helper\ArticleLoader` now logs a caught data-access failure to the
+  `plg_system_dinkytags` log category (silent unless a logger is configured) so a
+  real DB problem is not completely invisible; behaviour is otherwise unchanged.
+
 ### Changed
 - Display name is now **DinkyTags** (one word) — plugin name shown in the
   admin ("System - DinkyTags"), the head debug comment (`<!-- DinkyTags debug`),

@@ -98,9 +98,10 @@ final class MetaWriter
      */
     public function write(array $data): array
     {
-        $effective = $this->applyProperties($this->collectOpenGraph($data));
+        $custom    = $this->customOpenGraph();
+        $effective = $this->applyProperties($this->collectOpenGraph($data), $custom);
         $this->writeArticleMeta($data);
-        $this->writeTwitter($data, $effective);
+        $this->writeTwitter($data, $effective, $custom);
 
         return $this->decisions;
     }
@@ -152,16 +153,17 @@ final class MetaWriter
      * Writes the og:* map, honouring override_mode, and returns the values that are
      * effectively in force afterwards (ours, or a kept pre-existing one).
      *
-     * @param   array<string, string>  $og  The og:* map.
+     * @param   array<string, string>  $og      The og:* map.
+     * @param   array<string, string>  $custom  og:* already present as custom tags.
      *
      * @return  array<string, string>
      *
      * @since   1.0.0
      */
-    private function applyProperties(array $og): array
+    private function applyProperties(array $og, array $custom): array
     {
         $always        = (string) $this->params->get('override_mode', 'only-if-missing') === 'always';
-        $custom        = $always ? [] : $this->customOpenGraph();
+        $custom        = $always ? [] : $custom;
         $effective     = [];
         $keepOtherImage = false;
 
@@ -205,7 +207,11 @@ final class MetaWriter
 
     /**
      * Collects og:* values already on the document as raw custom <meta> tags
-     * (added via Document::addCustomTag, typically by a component view).
+     * (added via Document::addCustomTag, typically by a component view - e.g.
+     * iCagenda's event view).
+     *
+     * Tolerant of attribute order, single/double quotes and whitespace around
+     * "=", since the markup is authored by other extensions.
      *
      * @return  array<string, string>  Lower-cased og key => decoded content.
      *
@@ -215,12 +221,22 @@ final class MetaWriter
     {
         $found = [];
 
-        foreach ($this->doc->getHeadData()['custom'] ?? [] as $tag) {
-            if (
-                \is_string($tag)
-                && preg_match('/property=(["\'])(og:[a-z:]+)\1[^>]*\bcontent=(["\'])(.*?)\3/i', $tag, $m)
-            ) {
-                $found[strtolower($m[2])] = html_entity_decode($m[4], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        foreach ($this->doc->getHeadData()['custom'] ?? [] as $chunk) {
+            if (!\is_string($chunk) || stripos($chunk, 'og:') === false) {
+                continue;
+            }
+
+            if (!preg_match_all('/<meta\b[^>]*>/i', $chunk, $tags)) {
+                continue;
+            }
+
+            foreach ($tags[0] as $tag) {
+                if (
+                    preg_match('/\bproperty\s*=\s*(["\'])\s*(og:[a-z:]+)\s*\1/i', $tag, $p)
+                    && preg_match('/\bcontent\s*=\s*(["\'])(.*?)\1/is', $tag, $c)
+                ) {
+                    $found[strtolower($p[2])] = html_entity_decode($c[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                }
             }
         }
 
@@ -288,12 +304,13 @@ final class MetaWriter
      *
      * @param   array                  $data       The payload.
      * @param   array<string, string>  $effective  The og:* values in force.
+     * @param   array<string, string>  $custom     og:* already present as custom tags.
      *
      * @return  void
      *
      * @since   1.0.0
      */
-    private function writeTwitter(array $data, array $effective): void
+    private function writeTwitter(array $data, array $effective, array $custom): void
     {
         if ((int) $this->params->get('emit_twitter', 1) !== 1) {
             return;
@@ -302,9 +319,17 @@ final class MetaWriter
         $ownImageUrl = \is_array($data['image'] ?? null) ? ($data['image']['url'] ?? null) : null;
         $effImage    = $effective['og:image'] ?? '';
 
-        // Width is only known when the effective image is the one we resolved.
-        $width = ($effImage !== '' && $effImage === $ownImageUrl) ? ($data['image']['width'] ?? null) : null;
-        $card  = ($width === null || $width >= self::LARGE_IMAGE_MIN_WIDTH) ? 'summary_large_image' : 'summary';
+        // Width: ours when the effective image is the one we resolved; otherwise a
+        // width another extension published next to its own og:image; else unknown.
+        if ($effImage !== '' && $effImage === $ownImageUrl) {
+            $width = $data['image']['width'] ?? null;
+        } elseif ($effImage !== '' && isset($custom['og:image:width'])) {
+            $width = (int) $custom['og:image:width'] ?: null;
+        } else {
+            $width = null;
+        }
+
+        $card = ($width === null || $width >= self::LARGE_IMAGE_MIN_WIDTH) ? 'summary_large_image' : 'summary';
 
         $twitter = [
             'twitter:card'        => $card,
@@ -427,8 +452,10 @@ final class MetaWriter
     }
 
     /**
-     * Resolves og:locale from the og_locale param ('auto' derives it from the active
-     * site language, e.g. de-GB tag -> de_GB).
+     * Resolves og:locale from the og_locale param. 'auto' derives it from the active
+     * site language tag as language_TERRITORY, e.g. de-DE -> de_DE, and a language
+     * tag with a script subtag such as zh-Hans-CN -> zh_CN (og:locale has no place
+     * for the script).
      *
      * @return  string
      *
@@ -442,7 +469,18 @@ final class MetaWriter
             return $override;
         }
 
-        return str_replace('-', '_', $this->app->getLanguage()->getTag());
+        $parts = array_values(array_filter(explode('-', $this->app->getLanguage()->getTag()), 'strlen'));
+
+        if ($parts === []) {
+            return '';
+        }
+
+        if (\count($parts) === 1) {
+            return $parts[0];
+        }
+
+        // First segment is the language; the last is the territory.
+        return $parts[0] . '_' . strtoupper($parts[\count($parts) - 1]);
     }
 
     /**

@@ -39,7 +39,10 @@ final class Text
      */
     public static function excerpt(string $html, int $maxLength): string
     {
-        $text = strip_tags($html);
+        // strip_tags() removes the <script>/<style> tags but keeps their text
+        // content - drop those blocks whole first.
+        $text = preg_replace('#<(script|style)\b[^>]*>.*?</\1\s*>#is', ' ', $html) ?? $html;
+        $text = strip_tags($text);
         $text = preg_replace('/\{[^}]*\}/u', '', $text) ?? $text;
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 

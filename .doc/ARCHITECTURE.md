@@ -312,13 +312,18 @@ Every `PLG_SYSTEM_DINKYTAGS_PARAM_*` key referenced by the XML must exist in **b
   installation; keep it in sync by hand when a new Joomla minor ships.
 - **HTTPS behind a proxy**: `Uri::getInstance()` only honours `X-Forwarded-*` when Global
   Configuration → *Behind Load Balancer* is on. Without it, a canonical link set by the
-  site is still used verbatim, but a *built* `og:url` may come out as `http://`.
+  site is still used verbatim, but a *built* `og:url` (no `rel=canonical` on the page) may
+  come out with the internal host / `http://` scheme. The plugin does **not** parse
+  `X-Forwarded-*` itself (header-spoofing risk — that is exactly why Joomla gates it).
+  Fix on the site: enable *Behind Load Balancer*, or set Global Configuration →
+  *Site URL* (`live_site`) to the public `https://…` origin.
 
 ---
 
 ## Build
 
-`phing package` (Phing is available via Composer on the dev machine):
+`phing package` — Phing is obtained via Composer
+(`composer global require phing/phing`); the target assumes it is on `PATH`.
 
 1. reads `version` from `dinkytags.xml`
 2. writes `.releases/plg_system_dinkytags-<version>.zip` (excludes dotfiles, `build.xml`,

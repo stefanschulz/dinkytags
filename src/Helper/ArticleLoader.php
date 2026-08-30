@@ -13,6 +13,7 @@ namespace TheLoom\Plugin\System\DinkyTags\Helper;
 
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 
 \defined('_JEXEC') or die;
@@ -24,10 +25,29 @@ use Joomla\Database\ParameterType;
  * same access rules apply) and small direct queries for the bits the model does not
  * reliably carry (tags, category row, custom field value).
  *
+ * A failure here degrades to a generic payload rather than breaking the page, but is
+ * logged to the 'plg_system_dinkytags' category (silent unless an admin configures a
+ * logger for it) so a real DB problem is not completely invisible.
+ *
  * @since  1.0.0
  */
 final class ArticleLoader
 {
+    /**
+     * Logs a caught data-access failure without letting it surface.
+     *
+     * @param   string      $what  Short description of the operation that failed.
+     * @param   \Throwable   $e     The caught exception.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     */
+    private static function warn(string $what, \Throwable $e): void
+    {
+        Log::add('DinkyTags: ' . $what . ' failed - ' . $e->getMessage(), Log::WARNING, 'plg_system_dinkytags');
+    }
+
     /**
      * Loads a single published article via the com_content site model.
      *
@@ -58,6 +78,8 @@ final class ArticleLoader
 
             $item = $model->getItem();
         } catch (\Throwable $e) {
+            self::warn('article ' . $id . ' load', $e);
+
             return null;
         }
 
@@ -115,6 +137,8 @@ final class ArticleLoader
 
             return array_values(array_filter(array_map('strval', (array) $db->loadColumn())));
         } catch (\RuntimeException $e) {
+            self::warn('tag query for article ' . $id, $e);
+
             return [];
         }
     }
@@ -144,6 +168,8 @@ final class ArticleLoader
             $db->setQuery($query);
             $row = $db->loadObject();
         } catch (\RuntimeException $e) {
+            self::warn('category ' . $id . ' query', $e);
+
             return null;
         }
 
@@ -184,6 +210,8 @@ final class ArticleLoader
             $db->setQuery($query);
             $value = $db->loadResult();
         } catch (\RuntimeException $e) {
+            self::warn('custom field "' . $fieldName . '" query for article ' . $articleId, $e);
+
             return null;
         }
 
