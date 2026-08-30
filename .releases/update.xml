@@ -15,9 +15,9 @@
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>733501aa9e44cf1b66115c0e0a6be9f2cafd016f282e8e505a6c2337653aa046</sha256>
-    <sha384>db051578b96380478fd8e02588484ecfcf0a1c48f848f6f2610d673cfb36af142a7da72d9ee526eca380e7eddf19d1bc</sha384>
-    <sha512>a45f344d412a65a86e2c02574e98d992db4511e590703c5fe93dcb3ede152f4dce3ab700ac6965d3b1712f941322842c62e6598c5e0fd36d9350960ceea7c2f7</sha512>
+    <sha256>abdfe6e395766d327287b08c9420441dfcad5017906471bfd34090b85de2d5fb</sha256>
+    <sha384>066dc1ef353fe887e60fd425d01dcdb81cf0a51daacba46bf4686a6440f03f9eaf93fbebcff221e399b0b3393e36d968</sha384>
+    <sha512>d0ee22ecf86c24f025e1985cd51b2836664b67b68724258386db8cbe96f7a1b54be2b396677a016bce016bb48e5aeb115f92f71a5d8b33852d03841d6c6e75cc</sha512>
     <maintainer>Stefan Schulz</maintainer>
     <maintainerurl>https://www.the-loom.de</maintainerurl>
     <targetplatform name="joomla" version="(5.(1|2|3|4|5)|6.(0|1|2|3))"/>
