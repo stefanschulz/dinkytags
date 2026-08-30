@@ -1,4 +1,4 @@
-# Dinky Tags – Technical Architecture
+# DinkyTags – Technical Architecture
 
 Primary technical reference for developers and AI agents working on this codebase.
 
@@ -85,7 +85,7 @@ is present yet.
 `inject()` keeps only the two guards that make *any* further work (including a debug
 comment) impossible: wrong application class, or a non-HTML / error document. Everything
 else lives in `process()` so that when `debug=1` a skip still produces an explanation
-(`<!-- Dinky Tags debug ... skip: excluded component "com_icagenda" -->`). `process()`
+(`<!-- DinkyTags debug ... skip: excluded component "com_icagenda" -->`). `process()`
 never throws to the caller — a failure there is caught, logged, and swallowed; a page
 render must never fail because of a meta tag.
 

@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Changed
+- Display name is now **DinkyTags** (one word) — plugin name shown in the
+  admin ("System - DinkyTags"), the head debug comment (`<!-- DinkyTags debug`),
+  docs and the build metadata. Technical identifiers are unchanged: element
+  `dinkytags`, package `plg_system_dinkytags`, namespace
+  `TheLoom\Plugin\System\DinkyTags`.
 - Config form polish after review feedback:
   - `description_source` is a select instead of a two-state switcher — its long
     option labels no longer wrap over the next field / inline help.

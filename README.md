@@ -1,4 +1,4 @@
-# Dinky Tags
+# DinkyTags
 
 `plg_system_dinkytags` — a small, dependency-free Joomla **system plugin** that emits
 correct, complete, non-duplicated **Open Graph** and **Twitter Card** meta tags for
@@ -7,7 +7,7 @@ frontend pages.
 Joomla core (verified on 6.1.x) ships no `og:*` / `twitter:*` meta for `com_content`
 articles, categories or the home page, so links shared to Facebook, LinkedIn, X,
 WhatsApp, Slack, Signal, Discord or Mastodon fall back to the site logo or nothing.
-Dinky Tags fills that gap: drop it in, set a default image, done — portable across sites,
+DinkyTags fills that gap: drop it in, set a default image, done — portable across sites,
 configured entirely through plugin parameters.
 
 - **Target:** Joomla 5.1+ and 6.x, PHP 8.2+, site client only.
@@ -17,7 +17,7 @@ configured entirely through plugin parameters.
 ## Install
 
 Install the package zip (`plg_system_dinkytags-<x.y.z>.zip`) through **System →
-Install → Extensions**, then enable **System - Dinky Tags** under **System → Plugins**.
+Install → Extensions**, then enable **System - DinkyTags** under **System → Plugins**.
 Set at least `default_image`. That is the whole setup.
 
 To build the zip from source you need [Phing](https://www.phing.info/):
@@ -89,7 +89,7 @@ the head listing the decision trail — skip reason, context, chosen title / des
 every tag set / kept / skipped:
 
 ```html
-<!-- Dinky Tags debug
+<!-- DinkyTags debug
 context: article
 description source: metadesc
 image source: article image_fulltext
@@ -116,11 +116,11 @@ Configuration → Server → *Behind Load Balancer* so `Uri` honours `X-Forwarde
 canonical link set by the site is always used verbatim regardless.
 
 **An iCagenda / other event page still has its own tags.** Correct — `com_icagenda` is in
-`excluded_components` by default, so Dinky Tags does not touch it. Remove it from the
+`excluded_components` by default, so DinkyTags does not touch it. Remove it from the
 list to override.
 
 **Tags appear twice.** Another extension (e.g. an older social-meta plugin) is also
-emitting them. Disable it, or leave `override_mode` on `only-if-missing` and Dinky Tags
+emitting them. Disable it, or leave `override_mode` on `only-if-missing` and DinkyTags
 will defer to whatever is already set.
 
 ## Scope

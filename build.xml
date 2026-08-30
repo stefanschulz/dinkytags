@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Dinky Tags" default="package">
+<project name="DinkyTags" default="package">
 
     <property name="releaseFolder" value=".releases"/>
     <property name="package" value="plg_system_dinkytags"/>
@@ -29,14 +29,14 @@
         <echoxml file="${updatePath}" append="true">
             <updates>
                 <update>
-                    <name>Dinky Tags</name>
-                    <description>This is Dinky Tags ${version}</description>
+                    <name>DinkyTags</name>
+                    <description>This is DinkyTags ${version}</description>
                     <element>dinkytags</element>
                     <type>plugin</type>
                     <folder>system</folder>
                     <client>site</client>
                     <version>${version}</version>
-                    <infourl title="Dinky Tags">https://www.the-loom.de/dinkytags</infourl>
+                    <infourl title="DinkyTags">https://www.the-loom.de/dinkytags</infourl>
                     <downloads>
                         <downloadurl type="full" format="zip">https://www.the-loom.de/extensions/dinkytags/${archive}</downloadurl>
                     </downloads>

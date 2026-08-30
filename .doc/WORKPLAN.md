@@ -1,7 +1,7 @@
-# Dinky Tags — Arbeitsplan
+# DinkyTags — Arbeitsplan
 
 Basis: [joomla-opengraph-plugin-SPEC.md](joomla-opengraph-plugin-SPEC.md). Referenz-Repo-Struktur:
-`P:\dev\cuterweblinks` (ist ein *Modul*, Dinky Tags wird ein *System-Plugin* — Repo-Konventionen
+`P:\dev\cuterweblinks` (ist ein *Modul*, DinkyTags wird ein *System-Plugin* — Repo-Konventionen
 übernehmbar, Code-Skelett nicht).
 
 ## Festlegungen

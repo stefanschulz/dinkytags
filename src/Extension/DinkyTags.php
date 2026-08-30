@@ -201,7 +201,7 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
         // "--" may not appear inside an HTML comment.
         $body = str_replace(['--', '>'], ['- -', '&gt;'], implode("\n", $lines));
 
-        $doc->addCustomTag("<!-- Dinky Tags debug\n" . $body . "\n-->");
+        $doc->addCustomTag("<!-- DinkyTags debug\n" . $body . "\n-->");
     }
 
     /**
