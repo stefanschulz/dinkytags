@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Context detection classified an article or category reached without its own menu
+  item as `home` (it inherits the site's default/home Itemid, so `getActive()->home`
+  is 1). The `com_content` view is now checked first; `home` requires no `id` and a
+  matching component. Found during the Phase 10 Docker pass.
+- `ContextDetector` / `buildArticle` / `buildCategory` now pass an explicit `0`
+  default to `Input::getInt('id')`, which otherwise returns `null` for a missing key.
+
 ### Added
 - Repository skeleton: GPLv3 license, work plan, README, changelog.
 - Extension manifest `dinkytags.xml` with the full parameter form (18 params,
@@ -49,6 +57,5 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   README/CHANGELOG/LICENSE excluded from the package; `LICENSE.txt` shipped.
 - `.doc/ARCHITECTURE.md` (full technical reference) and a complete `README.md`
   (install, per-parameter docs, debugging, FAQ).
-
-### Not yet implemented
-- Docker functional test pass against the spec section 7 matrix (Phase 10).
+- Phase 10 functional test pass on a Joomla 5.x / PHP 8.3 Docker stack against the
+  spec section 7 matrix — see `.doc/ARCHITECTURE.md` for what was verified.

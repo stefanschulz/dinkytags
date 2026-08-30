@@ -34,8 +34,12 @@ final class ContextDetector
     /**
      * Returns the context for the current request.
      *
-     * Home is checked first: a home menu item wins even when it technically points at
-     * a com_content featured or category view (spec section 6).
+     * The com_content view is honoured first, so an article or category reached
+     * without its own menu item (and therefore rendered under the default / home
+     * Itemid) is still classified as `article` / `category` rather than `home`.
+     * A home menu item only yields `home` when the request really is the front page:
+     * its own featured / category view (or a non-com_content home), with no `id` and
+     * the same component as the menu item.
      *
      * @param   SiteApplication  $app    The site application.
      * @param   Input            $input  The request input.
@@ -46,22 +50,29 @@ final class ContextDetector
      */
     public static function detect(SiteApplication $app, Input $input): string
     {
-        $menu   = $app->getMenu();
-        $active = $menu ? $menu->getActive() : null;
+        $active = $app->getMenu()?->getActive();
+        $option = $input->getCmd('option');
+        $view   = $input->getCmd('view');
 
-        if ($active !== null && (int) ($active->home ?? 0) === 1) {
-            return 'home';
+        $isHome = $active !== null
+            && (int) ($active->home ?? 0) === 1
+            && $input->getInt('id', 0) === 0
+            && ($option === '' || $option === ($active->query['option'] ?? 'com_content'));
+
+        if ($option === 'com_content') {
+            if ($view === 'article') {
+                return 'article';
+            }
+
+            if ($view === 'category') {
+                return $isHome ? 'home' : 'category';
+            }
+
+            if ($view === 'featured') {
+                return $isHome ? 'home' : 'featured';
+            }
         }
 
-        if ($input->getCmd('option') === 'com_content') {
-            return match ($input->getCmd('view')) {
-                'article'  => 'article',
-                'category' => 'category',
-                'featured' => 'featured',
-                default    => 'other',
-            };
-        }
-
-        return 'other';
+        return $isHome ? 'home' : 'other';
     }
 }

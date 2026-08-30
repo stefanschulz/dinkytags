@@ -94,12 +94,22 @@ render must never fail because of a meta tag.
 
 **File**: `src/Helper/ContextDetector.php`
 
-1. **Home is checked first**: if the active menu item has `home == 1`, the context is
-   `home` even when that item technically points at a `com_content` featured or category
-   view. Getting this order wrong makes the front page advertise itself as a category.
-2. Otherwise, for `option=com_content`: `view=article` -> `article`, `view=category` ->
-   `category`, `view=featured` -> `featured`, anything else -> `other`.
-3. Everything else -> `other`.
+1. **The `com_content` view is honoured first.** `view=article` -> `article`,
+   `view=category` -> `category`, `view=featured` -> `featured`.
+2. `home` is only returned when the request really is the front page: the active menu
+   item is `home == 1`, **and** there is no `id` parameter, **and** the request's
+   `option` matches the home item's own component. A `featured` or `category` view that
+   meets those conditions collapses to `home` (a front page that is a featured/category
+   view); `article` never does.
+3. A `home` menu item with no recognised `com_content` view and matching component (a
+   non-com_content home) -> `home`. Everything else -> `other`.
+
+**Why the `id` / component guard matters:** an article or category reached *without its
+own menu item* is rendered under the site's default Itemid, which on most sites is the
+home item (`home == 1`). An earlier version checked `home` first and mislabelled every
+menu-less article as `home` — caught by the Phase 10 Docker pass. The guard also means
+`$input->getInt('id', 0)` must pass an explicit default: Joomla's `getInt()` returns
+`null`, not `0`, for a missing key, and `null === 0` is false.
 
 `CONTEXTS` (the public constant) is also the default for the `enabled_views` parameter.
 
@@ -324,22 +334,41 @@ integration may rebuild it on save — check `git status` before committing so a
 
 ## Testing
 
-No unit tests. Functional verification uses a disposable Docker stack (official Joomla
-source + PHP-apache + MySQL), installing the built zip via
-`php cli/joomla.php extension:install`.
+No unit tests. Functional verification uses a disposable Docker stack (official
+`joomla:5-apache` + `mariadb:11.4`), headless install via
+`php installation/joomla.php install`, plugin installed from the built zip via
+`php cli/joomla.php extension:install --path=<zip>` (the `--path` value must be the
+archive, not an unpacked folder). Fixtures are inserted straight into `#__content` /
+`#__tags` (workflows are off on a default install, so `state` is authoritative and no
+`#__workflow_associations` rows are needed).
 
-Content matrix (spec section 7): article with `image_fulltext` / only `image_intro` /
-only an inline `<img>` / nothing / image via custom field / remote image URL; plus a
-category blog page, a featured page, the home page, a contact page, a tag page and a 404.
+### Phase 10 pass (2026-08, Joomla 5.x / PHP 8.3)
 
-Per page, verify: exactly **one** `og:image`; `og:url` a real singly-encoded absolute URL
-that loads in a browser; `og:type=article` only on single articles;
-`twitter:card=summary_large_image` when the image is ≥ 300 px wide; no PHP notices; every
-`<meta>` well-formed; `tmpl=component` -> zero `og:` / `twitter:` tags;
-`override_mode=only-if-missing` -> an iCagenda event page is byte-identical to before.
-`debug=1` prints the full decision trail as one HTML comment. External validators:
-Facebook Sharing Debugger, X Card Validator, LinkedIn Post Inspector, opengraph.xyz;
-quick check `curl -s URL | grep -E 'og:|twitter:'`.
+Verified against the spec section 7 matrix:
+
+- **Image order** — six article fixtures (`image_fulltext`, only `image_intro`, only an
+  inline `<img>`, nothing, remote URL, sub-300 px image): each resolved to the expected
+  source, exactly **one** `og:image` per page.
+- **`og:type`** — `article` only on single articles; `website` on home / category.
+- **`og:description`** — a fixture `metadesc` of `Preis&amp;nbsp;inklusive.` came out as
+  `Preis inklusive.` (the double-encoded entity from spec §9 is cleaned).
+- **Excerpt** — a long intro-text with no `metadesc` was cut on a word boundary with `…`.
+- **`twitter:card`** — `summary_large_image` for the 1200-wide and the remote (unknown)
+  image; `summary` for the 200 px image.
+- **`og:url`** — built from the request when no canonical is present, singly encoded, no
+  `%3A%2F%2F`; when a `rel=canonical` was injected it was reused, and
+  `strip_query_params` removed `utm_source` from it while keeping the rest.
+- **Skip conditions** — `tmpl=component` and a 404 (`ErrorDocument`) emitted zero
+  `og:` / `twitter:` tags.
+- **`override_mode=only-if-missing`** — a pre-set `og:title` was kept (`twitter:title`
+  followed it); `og:description` / `og:image` were still added.
+- **Context detection** — the initial "menu-less article classified as home" bug was
+  found here and fixed (see the context-detection section).
+- **No PHP notices / warnings** in the Apache error log across the whole run.
+
+External validators for a real rollout: Facebook Sharing Debugger, X Card Validator,
+LinkedIn Post Inspector, opengraph.xyz; quick check
+`curl -s URL | grep -E 'og:|twitter:'`.
 
 ---
 

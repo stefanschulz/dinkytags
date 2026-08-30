@@ -315,7 +315,7 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
      */
     private function buildArticle(SiteApplication $app, Input $input, HtmlDocument $doc): array
     {
-        $id   = $input->getInt('id');
+        $id   = $input->getInt('id', 0);
         $item = ArticleLoader::article($app, $id);
 
         if ($item === null) {
@@ -384,10 +384,10 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
      */
     private function buildCategory(SiteApplication $app, Input $input, HtmlDocument $doc): array
     {
-        $category = ArticleLoader::category($input->getInt('id'));
+        $category = ArticleLoader::category($input->getInt('id', 0));
 
         if ($category === null) {
-            $this->log[] = 'category ' . $input->getInt('id') . ' could not be loaded - falling back to page/site data';
+            $this->log[] = 'category ' . $input->getInt('id', 0) . ' could not be loaded - falling back to page/site data';
 
             return $this->buildSimple(
                 $this->pageTitle($app, $doc),
