@@ -232,10 +232,16 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
      */
     private function viewEnabled(string $context): bool
     {
-        $enabled = $this->params->get('enabled_views', ContextDetector::CONTEXTS);
+        $params = $this->params->toArray();
+
+        // Never saved -> handle every context; saved (even with everything
+        // unticked) -> honour exactly what was ticked.
+        $enabled = \array_key_exists('enabled_views', $params)
+            ? $params['enabled_views']
+            : ContextDetector::CONTEXTS;
 
         if (\is_string($enabled)) {
-            $enabled = explode(',', $enabled);
+            $enabled = $enabled === '' ? [] : explode(',', $enabled);
         }
 
         return \in_array($context, array_map('trim', (array) $enabled), true);
@@ -712,8 +718,13 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
     /**
      * Reads a comma-separated plugin parameter into a trimmed, non-empty list.
      *
+     * The manifest default applies only when the parameter has never been saved;
+     * an explicitly cleared field means an empty list. Registry::get() cannot make
+     * that distinction (it returns the default for an empty string), so read the
+     * raw params array instead.
+     *
      * @param   string  $name     The parameter name.
-     * @param   string  $default  The default raw value.
+     * @param   string  $default  The default raw value for a never-saved config.
      *
      * @return  string[]
      *
@@ -721,7 +732,8 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
      */
     private function listParam(string $name, string $default = ''): array
     {
-        $raw = (string) $this->params->get($name, $default);
+        $params = $this->params->toArray();
+        $raw    = \array_key_exists($name, $params) ? (string) $params[$name] : $default;
 
         return array_values(array_filter(array_map('trim', explode(',', $raw)), 'strlen'));
     }

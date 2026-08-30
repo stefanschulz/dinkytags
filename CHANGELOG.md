@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- A defaulted list field (`excluded_components`, `strip_query_params`, and
+  `enabled_views`) could not be **cleared**: `Registry::get()` returns the manifest
+  default for an empty string, so an admin who emptied the field got the default
+  back. These are now read from the raw params array so a saved-but-empty field
+  means "none". Found while removing `com_icagenda` from `excluded_components` on
+  the empulsiv test instance.
+- `override_mode=only-if-missing` now also detects `og:*` that another extension
+  emitted as a raw custom `<meta>` tag via `Document::addCustomTag()` (a component
+  view — e.g. iCagenda's event view), which `getMetaData()` cannot see. Previously
+  those produced duplicate `og:title` / `og:image` / etc. when the component was
+  not in `excluded_components`. Kept custom values also feed the Twitter block.
+
 ### Changed
 - Display name is now **DinkyTags** (one word) — plugin name shown in the
   admin ("System - DinkyTags"), the head debug comment (`<!-- DinkyTags debug`),

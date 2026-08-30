@@ -161,12 +161,24 @@ final class MetaWriter
     private function applyProperties(array $og): array
     {
         $always        = (string) $this->params->get('override_mode', 'only-if-missing') === 'always';
+        $custom        = $always ? [] : $this->customOpenGraph();
         $effective     = [];
         $keepOtherImage = false;
 
         foreach ($og as $key => $value) {
-            if (!$always && \in_array($key, self::GUARDED, true)) {
-                $existing = trim((string) $this->doc->getMetaData($key, 'property'));
+            if (!$always) {
+                // Spec: only-if-missing guards og:title / og:description / og:image
+                // against a value set earlier via setMetaData().
+                $existing = \in_array($key, self::GUARDED, true)
+                    ? trim((string) $this->doc->getMetaData($key, 'property'))
+                    : '';
+
+                // Also keep *any* og:* another extension already emitted as a raw
+                // custom <meta> tag (a component view using addCustomTag, e.g.
+                // iCagenda) - getMetaData() cannot see those.
+                if ($existing === '' && isset($custom[$key])) {
+                    $existing = trim($custom[$key]);
+                }
 
                 if ($existing !== '') {
                     $effective[$key]  = $existing;
@@ -189,6 +201,30 @@ final class MetaWriter
         }
 
         return $effective;
+    }
+
+    /**
+     * Collects og:* values already on the document as raw custom <meta> tags
+     * (added via Document::addCustomTag, typically by a component view).
+     *
+     * @return  array<string, string>  Lower-cased og key => decoded content.
+     *
+     * @since   1.0.0
+     */
+    private function customOpenGraph(): array
+    {
+        $found = [];
+
+        foreach ($this->doc->getHeadData()['custom'] ?? [] as $tag) {
+            if (
+                \is_string($tag)
+                && preg_match('/property=(["\'])(og:[a-z:]+)\1[^>]*\bcontent=(["\'])(.*?)\3/i', $tag, $m)
+            ) {
+                $found[strtolower($m[2])] = html_entity_decode($m[4], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+        }
+
+        return $found;
     }
 
     /**
@@ -432,8 +468,12 @@ final class MetaWriter
     /**
      * Reads a comma-separated parameter into a trimmed, non-empty list.
      *
+     * The default applies only when the parameter has never been saved; a cleared
+     * field means an empty list. Registry::get() returns the default for an empty
+     * string too, so read the raw params array to tell the two apart.
+     *
      * @param   string  $name     The parameter name.
-     * @param   string  $default  The default raw value.
+     * @param   string  $default  The default raw value for a never-saved config.
      *
      * @return  string[]
      *
@@ -441,7 +481,8 @@ final class MetaWriter
      */
     private function csvParam(string $name, string $default): array
     {
-        $raw = (string) $this->params->get($name, $default);
+        $params = $this->params->toArray();
+        $raw    = \array_key_exists($name, $params) ? (string) $params[$name] : $default;
 
         return array_values(array_filter(array_map('trim', explode(',', $raw)), 'strlen'));
     }
