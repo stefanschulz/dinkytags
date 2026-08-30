@@ -21,7 +21,7 @@
 
     <config>
         <fields name="params">
-            <fieldset name="basic" label="PLG_SYSTEM_DINKYTAGS_FIELDSET_BASIC">
+            <fieldset name="basic">
 
                 <field name="enabled_views"
                        type="checkboxes"
@@ -50,10 +50,9 @@
                        preview="true"/>
 
                 <field name="description_source"
-                       type="radio"
+                       type="list"
                        label="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_LABEL"
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_DESC"
-                       layout="joomla.form.field.radio.switcher"
                        default="metadesc-first">
                     <option value="metadesc-first">PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_METADESC</option>
                     <option value="introtext-first">PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_INTROTEXT</option>
@@ -78,8 +77,8 @@
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_ARTICLE_META_DESC"
                        layout="joomla.form.field.radio.switcher"
                        default="1">
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field name="emit_twitter"
@@ -88,8 +87,8 @@
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_TWITTER_DESC"
                        layout="joomla.form.field.radio.switcher"
                        default="1">
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field name="twitter_site"
@@ -119,7 +118,7 @@
 
             </fieldset>
 
-            <fieldset name="advanced" label="PLG_SYSTEM_DINKYTAGS_FIELDSET_ADVANCED">
+            <fieldset name="advanced">
 
                 <field name="override_mode"
                        type="radio"
@@ -127,8 +126,8 @@
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_DESC"
                        layout="joomla.form.field.radio.switcher"
                        default="only-if-missing">
-                    <option value="only-if-missing">PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_ONLY_IF_MISSING</option>
-                    <option value="always">PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_ALWAYS</option>
+                    <option value="only-if-missing">JNO</option>
+                    <option value="always">JYES</option>
                 </field>
 
                 <field name="fallback_to_logo"
@@ -137,8 +136,8 @@
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_FALLBACK_TO_LOGO_DESC"
                        layout="joomla.form.field.radio.switcher"
                        default="0">
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field name="strip_query_params"
@@ -166,8 +165,8 @@
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_DEBUG_DESC"
                        layout="joomla.form.field.radio.switcher"
                        default="0">
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
             </fieldset>

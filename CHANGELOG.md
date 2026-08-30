@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Config form polish after review feedback:
+  - `description_source` is a select instead of a two-state switcher — its long
+    option labels no longer wrap over the next field / inline help.
+  - All yes/no switchers list `No` before `Yes` (Joomla convention) so the toggle
+    colour and position read correctly.
+  - `override_mode` reframed as a plain yes/no "Overwrite existing tags" toggle
+    (stored values `only-if-missing` / `always` unchanged, no code impact).
+  - Clearer labels/descriptions for "Overwrite existing tags", "Menu items to
+    skip" (says the list is the site's menu items) and `og:locale` (emphasises the
+    `auto` default).
+  - Dropped the custom `label` on both `<fieldset>` elements (and their now-unused
+    language keys); the fieldset name drives the tab.
+
 ### Fixed
 - Context detection classified an article or category reached without its own menu
   item as `home` (it inherits the site's default/home Itemid, so `getActive()->home`
