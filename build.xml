@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dinky Tags" default="package">
+
+    <property name="releaseFolder" value=".releases"/>
+    <property name="package" value="plg_system_dinkytags"/>
+
+    <target name="package">
+        <xmlproperty file="dinkytags.xml"/>
+        <!--suppress PhingDomInspection -->
+        <property name="version" value="${extension.version}"/>
+        <property name="archive" value="${package}-${version}.zip"/>
+        <property name="releasePath" value="${releaseFolder}/${archive}"/>
+        <property name="updatePath" value="${releaseFolder}/update.xml"/>
+        <delete file="${releasePath}" quiet="true"/>
+        <zip destfile="${releasePath}">
+            <fileset dir="." defaultexcludes="true">
+                <exclude name=".*"/>
+                <exclude name=".*/**"/>
+                <exclude name="build.xml"/>
+                <exclude name="CHANGELOG.md"/>
+                <exclude name="README.md"/>
+                <exclude name="LICENSE"/>
+            </fileset>
+        </zip>
+        <filehash file="${releasePath}" hashtype="1" algorithm="sha256" propertyname="fh256"/>
+        <filehash file="${releasePath}" hashtype="1" algorithm="sha384" propertyname="fh384"/>
+        <filehash file="${releasePath}" hashtype="1" algorithm="sha512" propertyname="fh512"/>
+        <echo file="${updatePath}">&lt;?xml version="1.0" ?&gt;${line.separator}</echo>
+        <echoxml file="${updatePath}" append="true">
+            <updates>
+                <update>
+                    <name>Dinky Tags</name>
+                    <description>This is Dinky Tags ${version}</description>
+                    <element>dinkytags</element>
+                    <type>plugin</type>
+                    <folder>system</folder>
+                    <client>site</client>
+                    <version>${version}</version>
+                    <infourl title="Dinky Tags">https://www.the-loom.de/dinkytags</infourl>
+                    <downloads>
+                        <downloadurl type="full" format="zip">https://www.the-loom.de/extensions/dinkytags/${archive}</downloadurl>
+                    </downloads>
+                    <tags>
+                        <tag>stable</tag>
+                    </tags>
+                    <sha256>${fh256}</sha256>
+                    <sha384>${fh384}</sha384>
+                    <sha512>${fh512}</sha512>
+                    <maintainer>Stefan Schulz</maintainer>
+                    <maintainerurl>https://www.the-loom.de</maintainerurl>
+                    <targetplatform name="joomla" version="(5.(1|2|3|4|5)|6.(0|1|2|3))"/>
+                    <php_minimum>8.2</php_minimum>
+                </update>
+            </updates>
+        </echoxml>
+    </target>
+
+</project>

@@ -703,3 +703,9 @@
 /README.txt
 /robots.txt.dist
 /web.config.txt
+
+# --- plg_system_dinkytags: keep the extension's own license file ---
+!/LICENSE.txt
+
+# --- IDE project files (not tracked, mirrors the cuterweblinks repo) ---
+/.idea/

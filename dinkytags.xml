@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+    <name>plg_system_dinkytags</name>
+    <author>The Loom / Stefan Schulz</author>
+    <creationDate>2026-08</creationDate>
+    <copyright>Copyright (C) 2026 The Loom / Stefan Schulz. All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+    <authorEmail>schulz@the-loom.de</authorEmail>
+    <authorUrl>https://www.the-loom.de</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_DINKYTAGS_XML_DESCRIPTION</description>
+
+    <namespace path="src">TheLoom\Plugin\System\DinkyTags</namespace>
+
+    <files>
+        <folder plugin="dinkytags">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+        <filename>dinkytags.xml</filename>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="PLG_SYSTEM_DINKYTAGS_FIELDSET_BASIC">
+
+                <field name="enabled_views"
+                       type="checkboxes"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_ENABLED_VIEWS_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_ENABLED_VIEWS_DESC"
+                       default="article,category,featured,home,other">
+                    <option value="article">PLG_SYSTEM_DINKYTAGS_PARAM_VIEW_ARTICLE</option>
+                    <option value="category">PLG_SYSTEM_DINKYTAGS_PARAM_VIEW_CATEGORY</option>
+                    <option value="featured">PLG_SYSTEM_DINKYTAGS_PARAM_VIEW_FEATURED</option>
+                    <option value="home">PLG_SYSTEM_DINKYTAGS_PARAM_VIEW_HOME</option>
+                    <option value="other">PLG_SYSTEM_DINKYTAGS_PARAM_VIEW_OTHER</option>
+                </field>
+
+                <field name="default_image"
+                       type="media"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_DEFAULT_IMAGE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_DEFAULT_IMAGE_DESC"
+                       types="images"
+                       preview="true"/>
+
+                <field name="home_image"
+                       type="media"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_HOME_IMAGE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_HOME_IMAGE_DESC"
+                       types="images"
+                       preview="true"/>
+
+                <field name="description_source"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="metadesc-first">
+                    <option value="metadesc-first">PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_METADESC</option>
+                    <option value="introtext-first">PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_SOURCE_INTROTEXT</option>
+                </field>
+
+                <field name="description_length"
+                       type="number"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_LENGTH_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_DESCRIPTION_LENGTH_DESC"
+                       min="60"
+                       max="500"
+                       default="200"/>
+
+                <field name="image_custom_field"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_IMAGE_CUSTOM_FIELD_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_IMAGE_CUSTOM_FIELD_DESC"/>
+
+                <field name="emit_article_meta"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_ARTICLE_META_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_ARTICLE_META_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field name="emit_twitter"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_TWITTER_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_EMIT_TWITTER_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field name="twitter_site"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_TWITTER_SITE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_TWITTER_SITE_DESC"
+                       hint="@example"
+                       showon="emit_twitter:1"/>
+
+                <field name="twitter_creator"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_TWITTER_CREATOR_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_TWITTER_CREATOR_DESC"
+                       hint="@example"
+                       showon="emit_twitter:1"/>
+
+                <field name="fb_app_id"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_FB_APP_ID_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_FB_APP_ID_DESC"/>
+
+                <field name="og_locale"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_OG_LOCALE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_OG_LOCALE_DESC"
+                       default="auto"/>
+
+            </fieldset>
+
+            <fieldset name="advanced" label="PLG_SYSTEM_DINKYTAGS_FIELDSET_ADVANCED">
+
+                <field name="override_mode"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="only-if-missing">
+                    <option value="only-if-missing">PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_ONLY_IF_MISSING</option>
+                    <option value="always">PLG_SYSTEM_DINKYTAGS_PARAM_OVERRIDE_MODE_ALWAYS</option>
+                </field>
+
+                <field name="fallback_to_logo"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_FALLBACK_TO_LOGO_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_FALLBACK_TO_LOGO_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="0">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field name="strip_query_params"
+                       type="textarea"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_DESC"
+                       rows="3"
+                       default="utm_source,utm_medium,utm_campaign,utm_term,utm_content,fbclid,gclid,mc_cid,mc_eid"/>
+
+                <field name="excluded_components"
+                       type="text"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_COMPONENTS_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_COMPONENTS_DESC"
+                       default="com_icagenda"/>
+
+                <field name="excluded_menu_items"
+                       type="menuitem"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_MENU_ITEMS_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_MENU_ITEMS_DESC"
+                       multiple="true"/>
+
+                <field name="debug"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_DEBUG_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_DEBUG_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="0">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+            </fieldset>
+        </fields>
+    </config>
+
+    <updateservers>
+        <server type="extension" priority="1" name="plg_system_dinkytags">
+            https://www.the-loom.de/extensions/dinkytags/update.xml
+        </server>
+    </updateservers>
+
+</extension>
