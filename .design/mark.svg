@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="DinkyTags">
+	<title>DinkyTags</title>
+	<!-- Reduced from logo.svg for small sizes (favicon, JED listing thumbnail): the
+	     tilted label with its point to the top-right and the punched hole survive at
+	     16px; the < > cut into the body does not, so it is dropped. currentColor so it
+	     recolours with its context. -->
+	<g transform="translate(12,12) rotate(42) scale(1.12)">
+		<path d="M-6 -3.5 L0 -11 L6 -3.5 L6 7 Q6 9 4 9 L-4 9 Q-6 9 -6 7 Z"/>
+		<circle cx="0" cy="-6.4" r="1.5" fill="currentColor" stroke="none"/>
+	</g>
+</svg>
