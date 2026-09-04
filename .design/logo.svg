@@ -2,21 +2,18 @@
 <!-- DinkyTags logo. Rounded-square field (the one element shared across this author's
      Joomla extensions, e.g. dinkymetrics / dinkygallery / sitesnap; colour and
      pictogram are otherwise free), a graphite field with a single brass label / tag:
-     sharp point to the top-right the way a price tag hangs, a punched hole below the
-     point, and a small dark < > cut into the body so the physical "tag" also reads as
-     a markup tag - which is what the plugin writes. The < > stays upright while the
-     tag is tilted, like level print on a swinging label. See mark.svg for the reduced
+     lying almost flat with its point to the top-right, a punched hole beside the
+     point, and a dark < > cut into the body so the physical "tag" also reads as a
+     markup tag - which is what the plugin writes. See mark.svg for the reduced
      small-size version. -->
 <svg width="100%" height="100%" viewBox="0 0 1080 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;">
     <g transform="translate(540,540) scale(5.4)">
         <rect x="-90" y="-90" width="180" height="180" rx="34" style="fill:rgb(27,35,44);"/>
-        <g transform="translate(6,-5) rotate(42)">
-            <path d="M-24 -14 L0 -47 L24 -14 L24 32 Q24 38 18 38 L-18 38 Q-24 38 -24 32 Z" style="fill:rgb(224,161,61);"/>
-            <circle cx="0" cy="-31" r="6" style="fill:rgb(27,35,44);"/>
-        </g>
-        <g transform="translate(1,2)" style="fill:none;stroke:rgb(27,35,44);stroke-width:5.5px;">
-            <path d="M-4 -11 L-16 0 L-4 11"/>
-            <path d="M6 -11 L18 0 L6 11"/>
+        <g transform="rotate(-9)">
+            <path d="M54 0 L28 -40 L-44 -40 Q-56 -40 -56 -28 L-56 28 Q-56 40 -44 40 L28 40 Z" style="fill:rgb(224,161,61);"/>
+            <circle cx="30" cy="0" r="6.5" style="fill:rgb(27,35,44);"/>
+            <path d="M-13 -13 L-26 0 L-13 13" style="fill:none;stroke:rgb(27,35,44);stroke-width:7px;"/>
+            <path d="M-1 -13 L12 0 L-1 13" style="fill:none;stroke:rgb(27,35,44);stroke-width:7px;"/>
         </g>
     </g>
 </svg>
