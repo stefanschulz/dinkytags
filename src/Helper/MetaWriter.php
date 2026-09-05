@@ -16,7 +16,9 @@ use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
+// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Writes the resolved payload to the document as Open Graph + Twitter Card meta.

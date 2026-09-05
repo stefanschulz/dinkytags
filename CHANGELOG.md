@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added (dev tooling)
+- Test infrastructure matching the sibling extensions: `composer.json`
+  (PHPUnit `^11.5 || ^12.0`, PHP_CodeSniffer `^3.10`), `phpunit.xml.dist`,
+  `phpcs.xml.dist` (PSR-12), `tests/bootstrap.php`, `.editorconfig`,
+  `.gitattributes` (LF in the repo).
+- `tests/Unit/TextTest.php` and `tests/Unit/ImageResolverTest.php` — 44 unit
+  tests over `Text::excerpt()` and `ImageResolver::firstImageSrc()` /
+  `resolve()` (the helpers with plain scalar signatures that never touch the
+  CMS). Run with `composer test` / `composer lint`.
+- `\defined('_JEXEC') or die;` is now wrapped in
+  `// phpcs:disable PSR1.Files.SideEffects` in every source file so `phpcs`
+  passes clean.
+- `build.xml` excludes `composer.*`, `vendor/`, `tests/` and the `.dist`
+  files from the package zip.
+
 ### Fixed
 - A defaulted list field (`excluded_components`, `strip_query_params`, and
   `enabled_views`) could not be **cleared**: `Registry::get()` returns the manifest

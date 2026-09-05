@@ -14,7 +14,9 @@ namespace TheLoom\Plugin\System\DinkyTags\Helper;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\Input\Input;
 
+// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Classifies a frontend request into one of the contexts the plugin can describe.

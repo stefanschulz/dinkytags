@@ -11,7 +11,9 @@
 
 namespace TheLoom\Plugin\System\DinkyTags\Helper;
 
+// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Small text utilities for turning HTML content into a clean meta description.

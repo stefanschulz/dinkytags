@@ -11,7 +11,15 @@
         <property name="archive" value="${package}-${version}.zip"/>
         <property name="releasePath" value="${releaseFolder}/${archive}"/>
         <property name="updatePath" value="${releaseFolder}/update.xml"/>
+
+        <mkdir dir="${releaseFolder}"/>
         <delete file="${releasePath}" quiet="true"/>
+
+        <!--
+            Everything the installer needs and nothing else. The development tooling is
+            listed explicitly: this repository keeps composer.json, tests/ and the two
+            .dist files at its root, and none of them belong in an extension package.
+        -->
         <zip destfile="${releasePath}">
             <fileset dir="." defaultexcludes="true">
                 <exclude name=".*"/>
@@ -20,6 +28,12 @@
                 <exclude name="CHANGELOG.md"/>
                 <exclude name="README.md"/>
                 <exclude name="LICENSE"/>
+                <exclude name="composer.json"/>
+                <exclude name="composer.lock"/>
+                <exclude name="vendor/**"/>
+                <exclude name="tests/**"/>
+                <exclude name="phpcs.xml.dist"/>
+                <exclude name="phpunit.xml.dist"/>
             </fileset>
         </zip>
         <filehash file="${releasePath}" hashtype="1" algorithm="sha256" propertyname="fh256"/>

@@ -712,3 +712,7 @@
 
 # --- local Docker test stack (see .docker/README.md) ---
 /.docker/
+
+/vendor
+/composer.lock
+/.phpunit.cache

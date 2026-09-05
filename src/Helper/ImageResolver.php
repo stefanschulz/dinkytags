@@ -13,7 +13,9 @@ namespace TheLoom\Plugin\System\DinkyTags\Helper;
 
 use Joomla\CMS\Uri\Uri;
 
+// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * Turns a raw image reference (article images JSON value, custom field, category
