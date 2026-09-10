@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+_No changes yet._
+
+## [1.0.0] - 2026-09-10
+
+First public release.
+
 ### Added (dev tooling)
 - Test infrastructure matching the sibling extensions: `composer.json`
   (PHPUnit `^11.5 || ^12.0`, PHP_CodeSniffer `^3.10`), `phpunit.xml.dist`,

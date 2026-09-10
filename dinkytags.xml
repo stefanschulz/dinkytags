@@ -2,7 +2,7 @@
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_dinkytags</name>
     <author>The Loom / Stefan Schulz</author>
-    <creationDate>2026-08</creationDate>
+    <creationDate>2026-09</creationDate>
     <copyright>Copyright (C) 2026 The Loom / Stefan Schulz. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <authorEmail>schulz@the-loom.de</authorEmail>
