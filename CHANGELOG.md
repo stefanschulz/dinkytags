@@ -66,6 +66,10 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   real DB problem is not completely invisible; behaviour is otherwise unchanged.
 
 ### Changed
+- `override_mode=only-if-missing` now also guards `og:site_name` and `og:locale`
+  (not just `og:title` / `og:description` / `og:image`): if another extension has
+  already set either — through the document API or as a raw custom `<meta>` tag —
+  DinkyTags keeps the existing value. Extends spec §3.7.
 - Display name is now **DinkyTags** (one word) — plugin name shown in the
   admin ("System - DinkyTags"), the head debug comment (`<!-- DinkyTags debug`),
   docs and the build metadata. Technical identifiers are unchanged: element

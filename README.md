@@ -73,7 +73,9 @@ Graph for event pages).
 **Advanced**
 
 - **When a tag already exists** (`override_mode`) — `only-if-missing` (default) leaves a
-  pre-existing `og:title` / `og:description` / `og:image` untouched; `always` overwrites.
+  pre-existing `og:title` / `og:description` / `og:image` / `og:site_name` / `og:locale`
+  untouched (whether another extension set it via the document API or as a raw `<meta>`
+  tag); `always` overwrites.
 - **Last-resort logo image** (`fallback_to_logo`) — off by default; when on, uses the
   template logo as `og:image` if a page has no image and no default.
 - **Strip query parameters** (`strip_query_params_enable`) — on by default; removes the

@@ -46,11 +46,16 @@ final class MetaWriter
     private const DEFAULT_STRIP = 'utm_source,utm_medium,utm_campaign,utm_term,utm_content,fbclid,gclid,mc_cid,mc_eid';
 
     /**
-     * og:* keys that override_mode=only-if-missing must not overwrite.
+     * og:* keys that override_mode=only-if-missing must not overwrite when another
+     * extension has already set them (via setMetaData() or a raw custom <meta>).
+     *
+     * The spec names og:title / og:description / og:image; og:site_name and
+     * og:locale are guarded the same way so a component that already describes the
+     * page identity is left fully intact.
      *
      * @since  1.0.0
      */
-    private const GUARDED = ['og:title', 'og:description', 'og:image'];
+    private const GUARDED = ['og:title', 'og:description', 'og:image', 'og:site_name', 'og:locale'];
 
     /**
      * og:image side-channel keys that only make sense next to our own og:image.
@@ -171,8 +176,8 @@ final class MetaWriter
 
         foreach ($og as $key => $value) {
             if (!$always) {
-                // Spec: only-if-missing guards og:title / og:description / og:image
-                // against a value set earlier via setMetaData().
+                // only-if-missing guards the GUARDED keys against a value set
+                // earlier via setMetaData().
                 $existing = \in_array($key, self::GUARDED, true)
                     ? trim((string) $this->doc->getMetaData($key, 'property'))
                     : '';

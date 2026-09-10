@@ -234,11 +234,16 @@ with no description emits no empty `og:description`.
 
 ### Deduplication / `override_mode`
 
-- `only-if-missing` (default): before writing `og:title` / `og:description` / `og:image`,
-  check `$doc->getMetaData($k, 'property')` — if already non-empty, keep the existing
-  value. When `og:image` is kept from elsewhere, `og:image:width/height/alt` are skipped
-  too (they would describe the wrong image), and `twitter:image` follows the effective
-  value.
+- `only-if-missing` (default): before writing a **guarded** key
+  (`MetaWriter::GUARDED` = `og:title` / `og:description` / `og:image` / `og:site_name` /
+  `og:locale`), check `$doc->getMetaData($k, 'property')` — if already non-empty, keep the
+  existing value. Any og:* key another extension emitted as a raw custom `<meta>` (see
+  `customOpenGraph()`) is kept the same way, guarded or not. When `og:image` is kept from
+  elsewhere, `og:image:width/height/alt` are skipped too (they would describe the wrong
+  image), and `twitter:image` follows the effective value.
+  - The spec (§3.7) names only `og:image` / `og:title` / `og:description` for the
+    `getMetaData()` check; `og:site_name` / `og:locale` are guarded on top of that so a
+    component that already set the page identity is left fully intact.
 - `always`: overwrite unconditionally.
 - The primary mechanism for leaving another producer alone is still
   `excluded_components` (iCagenda by default, gated by `exclude_components_enable`);
