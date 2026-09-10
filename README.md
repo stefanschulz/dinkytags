@@ -134,7 +134,8 @@ will defer to whatever is already set.
 
 ## Scope
 
-**v1.0** does everything above. Deferred to **v1.1+**: on-the-fly image resizing
-(crop/pad to 1200×630, cached and served as `og:image`) and per-language default images.
+The current release does everything above. Deferred to a later version: on-the-fly image
+resizing (crop/pad to 1200×630, cached and served as `og:image`) and per-language default
+images.
 Out of scope entirely: JSON-LD (Joomla core covers it), sitemaps, redirects, a per-page
 meta editor UI.

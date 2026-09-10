@@ -2,8 +2,8 @@
 
 Primary technical reference for developers and AI agents working on this codebase.
 
-**Version**: 1.0.0
-**Last Updated**: August 2026
+**Version**: 1.1.0
+**Last Updated**: September 2026
 
 ---
 
