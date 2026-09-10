@@ -68,7 +68,7 @@ onBeforeCompileHead
        skip chain (each records a reason in $this->log, then returns):
          - tmpl=component | format != html | print=1
          - site offline
-         - option in excluded_components   (default: com_icagenda)
+         - exclude_components_enable=1 AND option in excluded_components   (default: com_icagenda)
          - active menu item id in excluded_menu_items
        $context = ContextDetector::detect(...)
        if not in enabled_views: return
@@ -225,11 +225,12 @@ with no description emits no empty `og:description`.
 1. Reuse an existing `rel=canonical`: scan `$doc->getHeadData()['links']` for
    `relation === 'canonical'` and take its href.
 2. Else build from `Uri::getInstance()->toString(['scheme','host','port','path','query'])`.
-3. Remove the query keys listed in `strip_query_params` — **preserving the order and
-   encoding of the parameters that remain, never touching the path**. The whole URL is
-   passed as a plain string to `setMetaData` (Joomla escapes on render). The concrete
-   bug in the extension this replaces was `urlencode()` on the entire URL, producing
-   `og:url` as `http%3A%2F%2F…`; do not reintroduce it.
+3. If `strip_query_params_enable=1` (default), remove the query keys listed in
+   `strip_query_params` — **preserving the order and encoding of the parameters that
+   remain, never touching the path**. The whole URL is passed as a plain string to
+   `setMetaData` (Joomla escapes on render). The concrete bug in the extension this
+   replaces was `urlencode()` on the entire URL, producing `og:url` as `http%3A%2F%2F…`;
+   do not reintroduce it.
 
 ### Deduplication / `override_mode`
 
@@ -240,7 +241,8 @@ with no description emits no empty `og:description`.
   value.
 - `always`: overwrite unconditionally.
 - The primary mechanism for leaving another producer alone is still
-  `excluded_components` (iCagenda by default); `override_mode` is the secondary net.
+  `excluded_components` (iCagenda by default, gated by `exclude_components_enable`);
+  `override_mode` is the secondary net.
 
 ### `article:*` and `fb:app_id`
 
@@ -296,7 +298,9 @@ Two fieldsets: `basic` (`Tags`) and `advanced`.
 | `og_locale` | text | `auto` | `MetaWriter::resolveLocale()` |
 | `override_mode` | radio | `only-if-missing` | `MetaWriter::applyProperties()` |
 | `fallback_to_logo` | radio (1/0) | `0` | `resolveArticleImage()` step 7 |
+| `strip_query_params_enable` | radio (1/0) | `1` | `MetaWriter::stripQueryParams()` gate |
 | `strip_query_params` | textarea | `utm_*,fbclid,gclid,mc_cid,mc_eid` | `MetaWriter::stripQueryParams()` |
+| `exclude_components_enable` | radio (1/0) | `1` | `DinkyTags::process()` skip chain gate |
 | `excluded_components` | text | `com_icagenda` | `DinkyTags::process()` skip chain |
 | `excluded_menu_items` | menuitem (multi) | – | `DinkyTags::process()` skip chain |
 | `debug` | radio (1/0) | `0` | `DinkyTags::emitDebugComment()` |

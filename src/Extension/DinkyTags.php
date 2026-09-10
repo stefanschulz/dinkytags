@@ -144,9 +144,16 @@ final class DinkyTags extends CMSPlugin implements SubscriberInterface
         }
 
         // Component opt-out list (default: com_icagenda emits its own clean OG).
+        // The list only applies while exclude_components_enable is on - that toggle
+        // is how an admin turns the exclusion off, since an emptied text field
+        // cannot be told apart from "never configured".
         $option = (string) $input->getCmd('option');
 
-        if ($option !== '' && \in_array($option, $this->listParam('excluded_components', 'com_icagenda'), true)) {
+        if (
+            $option !== ''
+            && (int) $this->params->get('exclude_components_enable', 1) === 1
+            && \in_array($option, $this->listParam('excluded_components', 'com_icagenda'), true)
+        ) {
             $this->log[] = 'skip: excluded component "' . $option . '"';
 
             return;

@@ -140,17 +140,39 @@
                     <option value="1">JYES</option>
                 </field>
 
+                <field name="strip_query_params_enable"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_ENABLE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_ENABLE_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="1">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
                 <field name="strip_query_params"
                        type="textarea"
                        label="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_LABEL"
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_STRIP_QUERY_PARAMS_DESC"
                        rows="3"
+                       showon="strip_query_params_enable:1"
                        default="utm_source,utm_medium,utm_campaign,utm_term,utm_content,fbclid,gclid,mc_cid,mc_eid"/>
+
+                <field name="exclude_components_enable"
+                       type="radio"
+                       label="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDE_COMPONENTS_ENABLE_LABEL"
+                       description="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDE_COMPONENTS_ENABLE_DESC"
+                       layout="joomla.form.field.radio.switcher"
+                       default="1">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
 
                 <field name="excluded_components"
                        type="text"
                        label="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_COMPONENTS_LABEL"
                        description="PLG_SYSTEM_DINKYTAGS_PARAM_EXCLUDED_COMPONENTS_DESC"
+                       showon="exclude_components_enable:1"
                        default="com_icagenda"/>
 
                 <field name="excluded_menu_items"

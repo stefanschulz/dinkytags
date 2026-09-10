@@ -24,9 +24,18 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - A defaulted list field (`excluded_components`, `strip_query_params`, and
   `enabled_views`) could not be **cleared**: `Registry::get()` returns the manifest
   default for an empty string, so an admin who emptied the field got the default
-  back. These are now read from the raw params array so a saved-but-empty field
-  means "none". Found while removing `com_icagenda` from `excluded_components` on
-  the empulsiv test instance.
+  back — at runtime *and* in the edit form, which re-rendered the default and wrote
+  it back on the next save. The runtime side now reads the raw params array so a
+  saved-but-empty field means "none". For the two text fields where an emptied value
+  is indistinguishable from "never configured" in the form, a companion on/off
+  switch is the way to disable them:
+  - `strip_query_params_enable` (default on) gates `strip_query_params`.
+  - `exclude_components_enable` (default on) gates `excluded_components`.
+  Turning the switch off ignores the list entirely; the list field keeps its
+  pre-filled default so an unrelated save no longer wipes it. `enabled_views` is a
+  `checkboxes` field (array value), so it was already immune and needs no switch.
+  Found while removing `com_icagenda` from `excluded_components` on the empulsiv
+  test instance.
 - `override_mode=only-if-missing` now also detects `og:*` that another extension
   emitted as a raw custom `<meta>` tag via `Document::addCustomTag()` (a component
   view — e.g. iCagenda's event view), which `getMetaData()` cannot see. Previously
@@ -85,7 +94,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Repository skeleton: GPLv3 license, work plan, README, changelog.
-- Extension manifest `dinkytags.xml` with the full parameter form (18 params,
+- Extension manifest `dinkytags.xml` with the full parameter form (20 params,
   `basic` + `advanced` fieldsets) and an update server entry.
 - DI service provider `services/provider.php`.
 - `DinkyTags` system-plugin class: subscribes to `onBeforeCompileHead`, implements

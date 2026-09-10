@@ -418,6 +418,10 @@ final class MetaWriter
      */
     private function stripQueryParams(string $url): string
     {
+        if ((int) $this->params->get('strip_query_params_enable', 1) !== 1) {
+            return $url;
+        }
+
         $strip = $this->csvParam('strip_query_params', self::DEFAULT_STRIP);
 
         if ($strip === [] || !str_contains($url, '?')) {

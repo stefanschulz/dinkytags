@@ -43,8 +43,9 @@ For articles it also emits `article:published_time`, `article:modified_time`,
 `emit_article_meta`). `og:url` reuses the page's existing `rel=canonical` when present.
 
 It stays silent on: non-HTML output, `tmpl=component` / `print=1`, the offline page, the
-error page, admin / CLI / API, and any component in `excluded_components` (default
-`com_icagenda`, which emits its own Open Graph for event pages).
+error page, admin / CLI / API, and — while **Skip certain components** is on (the default) —
+any component in `excluded_components` (default `com_icagenda`, which emits its own Open
+Graph for event pages).
 
 ## Parameters
 
@@ -75,9 +76,13 @@ error page, admin / CLI / API, and any component in `excluded_components` (defau
   pre-existing `og:title` / `og:description` / `og:image` untouched; `always` overwrites.
 - **Last-resort logo image** (`fallback_to_logo`) — off by default; when on, uses the
   template logo as `og:image` if a page has no image and no default.
-- **Strip query parameters** (`strip_query_params`) — comma list removed from `og:url`
-  (tracking params). Order and encoding of the rest are preserved; the path is untouched.
-- **Excluded components** (`excluded_components`) — `option` values to skip entirely.
+- **Strip query parameters** (`strip_query_params_enable`) — on by default; removes the
+  keys in **Parameters to strip** (`strip_query_params`) from `og:url` (tracking params).
+  Order and encoding of the rest are preserved; the path is untouched. Turn the switch off
+  to leave `og:url` untouched — emptying the list alone falls back to the default.
+- **Skip certain components** (`exclude_components_enable`) — on by default; on pages of the
+  components in **Components to skip** (`excluded_components`, `option` values) the plugin
+  emits nothing. Turn the switch off to have DinkyTags handle every component.
 - **Excluded menu items** (`excluded_menu_items`).
 - **Debug comment** (`debug`) — see below. Off in production.
 
@@ -116,8 +121,10 @@ Configuration → Server → *Behind Load Balancer* so `Uri` honours `X-Forwarde
 canonical link set by the site is always used verbatim regardless.
 
 **An iCagenda / other event page still has its own tags.** Correct — `com_icagenda` is in
-`excluded_components` by default, so DinkyTags does not touch it. Remove it from the
-list to override.
+`excluded_components` by default, so DinkyTags does not touch it. To override, either remove
+it from the list and keep the switch on, or turn **Skip certain components** off entirely.
+(Emptying the list field on its own does not stick: Joomla restores the default for an empty
+value, so use the switch.)
 
 **Tags appear twice.** Another extension (e.g. an older social-meta plugin) is also
 emitting them. Disable it, or leave `override_mode` on `only-if-missing` and DinkyTags
