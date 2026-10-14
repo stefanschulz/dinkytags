@@ -7,6 +7,22 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 _No changes yet._
 
+## [1.1.1] - 2026-10-14
+
+### Fixed
+- `override_mode=only-if-missing` did not recognise a raw custom
+  `<meta property="og:site_name">` (or any `og:*` key containing an underscore,
+  such as `og:image:secure_url`): the property pattern stopped at `_`, so
+  DinkyTags still wrote its own tag and the page ended up with two. The pattern
+  now accepts digits, underscores, dots and hyphens.
+
+### Added
+- Unit tests for the custom-tag parser (`MetaWriter::parseCustomOpenGraph()`).
+
+### Verified
+- Joomla 6.2.0: install and upgrade, front-end output on article / category /
+  featured / login views without PHP notices, both switches, admin form save.
+
 ## [1.1.0] - 2026-09-10
 
 Supersedes the initial 1.0.0 publish; rolls up the fixes and refinements made

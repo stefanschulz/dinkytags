@@ -226,9 +226,26 @@ final class MetaWriter
      */
     private function customOpenGraph(): array
     {
+        return self::parseCustomOpenGraph($this->doc->getHeadData()['custom'] ?? []);
+    }
+
+    /**
+     * Extracts the og:* properties from raw custom head chunks.
+     *
+     * The property name allows underscores and digits (og:site_name,
+     * og:image:secure_url, og:locale:alternate).
+     *
+     * @param   array  $chunks  The 'custom' entries of the head data.
+     *
+     * @return  array<string, string>  Lower-cased og key => decoded content.
+     *
+     * @since   1.1.1
+     */
+    public static function parseCustomOpenGraph(array $chunks): array
+    {
         $found = [];
 
-        foreach ($this->doc->getHeadData()['custom'] ?? [] as $chunk) {
+        foreach ($chunks as $chunk) {
             if (!\is_string($chunk) || stripos($chunk, 'og:') === false) {
                 continue;
             }
@@ -239,7 +256,7 @@ final class MetaWriter
 
             foreach ($tags[0] as $tag) {
                 if (
-                    preg_match('/\bproperty\s*=\s*(["\'])\s*(og:[a-z:]+)\s*\1/i', $tag, $p)
+                    preg_match('/\bproperty\s*=\s*(["\'])\s*(og:[a-z0-9_:.\-]+)\s*\1/i', $tag, $p)
                     && preg_match('/\bcontent\s*=\s*(["\'])(.*?)\1/is', $tag, $c)
                 ) {
                     $found[strtolower($p[2])] = html_entity_decode($c[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
