@@ -11,13 +11,12 @@ BASE_URL="http://127.0.0.1:${PORT}"
 COMPOSE=(docker compose)
 J() { "${COMPOSE[@]}" exec -T joomla sh -c "$1"; }
 
-shopt -s nullglob
-PACKAGES=(.releases/plg_system_dinkytags-*.zip)
-if [[ ${#PACKAGES[@]} -ne 1 ]]; then
-    echo "Expected one package in .releases/, found ${#PACKAGES[@]}." >&2
+VERSION="$(php -r '$xml = simplexml_load_file("dinkytags.xml"); if (!$xml) { exit(1); } echo (string) $xml->version;')"
+PACKAGE=".releases/plg_system_dinkytags-${VERSION}.zip"
+if [[ ! -f "$PACKAGE" ]]; then
+    echo "Expected the package ZIP for version ${VERSION}: ${PACKAGE}" >&2
     exit 1
 fi
-PACKAGE="${PACKAGES[0]}"
 PACKAGE_NAME="$(basename "$PACKAGE")"
 
 "${COMPOSE[@]}" up -d

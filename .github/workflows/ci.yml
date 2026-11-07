@@ -89,6 +89,9 @@ jobs:
           extensions: zip
           coverage: none
           tools: composer
+      - name: Read package version from the manifest
+        id: package_version
+        run: echo "version=$(php -r '$xml = simplexml_load_file("dinkytags.xml"); if (!$xml) { exit(1); } echo (string) $xml->version;')" >> "$GITHUB_OUTPUT"
       - name: Install Phing
         run: |
           composer global require --no-interaction phing/phing:^3.0
@@ -98,13 +101,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          shopt -s nullglob
-          packages=(.releases/plg_system_dinkytags-*.zip)
-          if [[ ${#packages[@]} -ne 1 ]]; then
-            echo "::error::Expected one DinkyTags package ZIP; found ${#packages[@]}"
+          package=".releases/plg_system_dinkytags-${VERSION}.zip"
+          if [[ ! -f "$package" ]]; then
+            echo "::error::Expected the package ZIP for version ${VERSION}: ${package}"
             exit 1
           fi
-          package="${packages[0]}"
           unzip -tq "$package"
           contents="$(unzip -Z1 "$package")"
           for required in \
@@ -138,12 +139,14 @@ jobs:
                 exit(1);
             }
           ' "$package"
+        env:
+          VERSION: ${{ steps.package_version.outputs.version }}
       - uses: actions/upload-artifact@v4
         with:
           name: plg-system-dinkytags-package
           include-hidden-files: true
           path: |
-            .releases/plg_system_dinkytags-*.zip
+            .releases/plg_system_dinkytags-${{ steps.package_version.outputs.version }}.zip
             .releases/update.xml
           if-no-files-found: error
 
