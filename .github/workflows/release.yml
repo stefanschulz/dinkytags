@@ -1,0 +1,108 @@
+name: Release
+
+# Pushing a tag vX.Y.Z publishes that version. The tag must match the manifest,
+# release notes come from that version's CHANGELOG.md section, and the whole CI
+# must pass before the checked package is attached to a GitHub release.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Tag, version and release notes
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: The tag matches the manifest version
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if ! [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "::error::The tag $TAG is not of the form vX.Y.Z."
+            exit 1
+          fi
+          VERSION="${BASH_REMATCH[1]}"
+          MANIFEST_VERSION="$(php -r '$xml = simplexml_load_file("dinkytags.xml"); if (!$xml) { exit(1); } echo (string) $xml->version;')"
+          if [[ "$VERSION" != "$MANIFEST_VERSION" ]]; then
+            echo "::error::Tag version $VERSION does not match manifest version $MANIFEST_VERSION."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Release notes from CHANGELOG.md
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          tr -d '\r' < CHANGELOG.md \
+            | awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { found = 1; next } found && /^## / { exit } found { print }' \
+            > release-notes.md
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "::error::CHANGELOG.md has no release notes under '## [$VERSION] - ...'."
+            exit 1
+          fi
+          if tr -d '\r' < CHANGELOG.md \
+              | awk '/^## \[Unreleased\]/ { found = 1; next } found && /^## / { exit } found { print }' \
+              | grep -q '[^[:space:]]'; then
+            echo "::warning::CHANGELOG.md still has entries under [Unreleased]; they are not in these release notes."
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+          if-no-files-found: error
+
+  ci:
+    name: Full CI
+    needs: verify
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish the GitHub release
+    needs: [verify, ci]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: plg-system-dinkytags-package
+          path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: release
+
+      - name: Ensure the verified release assets are present
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          test -s "release/plg_system_dinkytags-$VERSION.zip"
+          test -s release/update.xml
+          test -s release/release-notes.md
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "release/plg_system_dinkytags-$VERSION.zip" \
+            release/update.xml \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "DinkyTags $VERSION" \
+            --notes-file release/release-notes.md \
+            --verify-tag
