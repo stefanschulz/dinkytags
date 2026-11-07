@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    name: Syntax and XML (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: PHP syntax
+        run: find src services tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: XML configuration files parse
+        run: |
+          php -r 'foreach (array_slice($argv, 1) as $file) { if (simplexml_load_file($file) === false) { exit(1); } echo "ok  $file\n"; }' \
+            dinkytags.xml build.xml phpcs.xml.dist phpunit.xml.dist
+      - name: Language files cover every manifest key
+        shell: bash
+        run: |
+          set -euo pipefail
+          for key in $(grep -oE 'PLG_SYSTEM_DINKYTAGS_[A-Z0-9_]+' dinkytags.xml | sort -u); do
+            grep -q "^${key}=" language/en-GB/plg_system_dinkytags.ini || {
+              echo "::error::Missing en-GB language key ${key}"
+              exit 1
+            }
+            grep -q "^${key}=" language/de-DE/plg_system_dinkytags.ini || {
+              echo "::error::Missing de-DE language key ${key}"
+              exit 1
+            }
+          done
+          diff -u \
+            <(grep -oE '^PLG_SYSTEM_DINKYTAGS_[A-Z0-9_]+' language/en-GB/plg_system_dinkytags.ini | sort) \
+            <(grep -oE '^PLG_SYSTEM_DINKYTAGS_[A-Z0-9_]+' language/de-DE/plg_system_dinkytags.ini | sort)
+
+  standard:
+    name: Coding standard (PSR-12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer lint
+
+  unit:
+    name: Unit tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer test
+
+  package:
+    name: Build and check the extension ZIP
+    runs-on: ubuntu-latest
+    needs: [syntax, standard, unit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: zip
+          coverage: none
+          tools: composer
+      - name: Install Phing
+        run: |
+          composer global require --no-interaction phing/phing:^3.0
+          composer global config bin-dir --absolute --quiet >> "$GITHUB_PATH"
+      - run: phing package
+      - name: Validate the archive contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          packages=(.releases/plg_system_dinkytags-*.zip)
+          if [[ ${#packages[@]} -ne 1 ]]; then
+            echo "::error::Expected one DinkyTags package ZIP; found ${#packages[@]}"
+            exit 1
+          fi
+          package="${packages[0]}"
+          unzip -tq "$package"
+          contents="$(unzip -Z1 "$package")"
+          for required in \
+            dinkytags.xml \
+            services/provider.php \
+            src/Extension/DinkyTags.php \
+            src/Helper/MetaWriter.php \
+            language/en-GB/plg_system_dinkytags.ini \
+            language/de-DE/plg_system_dinkytags.ini \
+            LICENSE.txt; do
+            grep -Fxq "$required" <<< "$contents" || {
+              echo "::error::Package is missing $required"
+              exit 1
+            }
+          done
+          if grep -Eq '(^|/)(tests|vendor)/|(^|/)composer\.(json|lock)$' <<< "$contents"; then
+            echo "::error::Development files were included in the package"
+            exit 1
+          fi
+          php -r '
+            $manifest = simplexml_load_file("dinkytags.xml");
+            $updates = simplexml_load_file(".releases/update.xml");
+            $entry = $updates->update ?? null;
+            $package = $argv[1];
+            if (!$manifest || !$entry
+                || (string) $entry->element !== "dinkytags"
+                || (string) $entry->folder !== "system"
+                || (string) $entry->version !== (string) $manifest->version
+                || !hash_equals((string) $entry->sha256, hash_file("sha256", $package))) {
+                fwrite(STDERR, "Generated update.xml does not match the manifest and ZIP.\n");
+                exit(1);
+            }
+          ' "$package"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plg-system-dinkytags-package
+          include-hidden-files: true
+          path: |
+            .releases/plg_system_dinkytags-*.zip
+            .releases/update.xml
+          if-no-files-found: error
+
+  integration:
+    name: Joomla integration (Joomla ${{ matrix.joomla }})
+    runs-on: ubuntu-latest
+    needs: [package]
+    strategy:
+      fail-fast: false
+      matrix:
+        joomla: ['5', '6']
+    env:
+      JOOMLA_TAG: ${{ matrix.joomla }}
+      CI_JOOMLA_PORT: '8280'
+      COMPOSE_FILE: tests/Integration/compose.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: plg-system-dinkytags-package
+          path: .releases
+      - name: Install Joomla and the built package, then load fixtures
+        run: bash tests/Integration/ci-seed.sh
+      - name: Check frontend meta output
+        run: bash tests/Integration/ci-smoke.sh
+      - name: Joomla logs
+        if: failure()
+        run: docker compose logs --tail=100
+      - name: Stop the disposable stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans || true

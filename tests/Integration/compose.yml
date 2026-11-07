@@ -1,0 +1,33 @@
+name: dinkytags-ci
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpw
+      MARIADB_DATABASE: joomla
+      MARIADB_USER: joomla
+      MARIADB_PASSWORD: joomlapw
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  joomla:
+    image: joomla:${JOOMLA_TAG:-5}-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${CI_JOOMLA_PORT:-8280}:80"
+    environment:
+      JOOMLA_DB_HOST: db
+      JOOMLA_DB_USER: joomla
+      JOOMLA_DB_PASSWORD: joomlapw
+      JOOMLA_DB_NAME: joomla
+    volumes:
+      - html-data:/var/www/html
+
+volumes:
+  html-data:
