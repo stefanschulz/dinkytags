@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 _No changes yet._
 
+## [1.1.2] - 2026-11-07
+
+### Added
+- GitHub Actions CI for PHP 8.2–8.4 and Joomla 5 / 6, including lint, unit,
+  package and integration checks.
+- Tag-based GitHub releases that attach the package built and verified by CI.
+
 ## [1.1.1] - 2026-10-14
 
 ### Fixed

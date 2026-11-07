@@ -2,12 +2,12 @@
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_dinkytags</name>
     <author>The Loom / Stefan Schulz</author>
-    <creationDate>2026-10</creationDate>
+    <creationDate>2026-11</creationDate>
     <copyright>Copyright (C) 2026 The Loom / Stefan Schulz. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <authorEmail>schulz@the-loom.de</authorEmail>
     <authorUrl>https://www.the-loom.de</authorUrl>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <description>PLG_SYSTEM_DINKYTAGS_XML_DESCRIPTION</description>
 
     <namespace path="src">TheLoom\Plugin\System\DinkyTags</namespace>

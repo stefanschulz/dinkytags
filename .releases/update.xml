@@ -2,22 +2,22 @@
 <updates>
   <update>
     <name>DinkyTags</name>
-    <description>This is DinkyTags 1.1.1</description>
+    <description>This is DinkyTags 1.1.2</description>
     <element>dinkytags</element>
     <type>plugin</type>
     <folder>system</folder>
     <client>site</client>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <infourl title="DinkyTags">https://www.the-loom.de/dinkytags</infourl>
     <downloads>
-      <downloadurl type="full" format="zip">https://www.the-loom.de/extensions/dinkytags/plg_system_dinkytags-1.1.1.zip</downloadurl>
+      <downloadurl type="full" format="zip">https://www.the-loom.de/extensions/dinkytags/plg_system_dinkytags-1.1.2.zip</downloadurl>
     </downloads>
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>63cbbd6c56e5ce0aed6b49ee622494742c1252c685667d4071dfac06accba3d1</sha256>
-    <sha384>be78b5c1bf5d7fb953d3674b1fbf655781971a521eb74db4880da80c954185023f5b2a836b8278ceca315cf009c3e2db</sha384>
-    <sha512>a7a5806752c724dfd5626a5c14ffc94681b6824c21be89507289030c002ce426ae961742a31d45c3fd2cac116582680d24779ea08899a81f44527b89573fe077</sha512>
+    <sha256>1f64ddd573ed93307740211fa339686e774b53ba5243ea65996eace702f97584</sha256>
+    <sha384>c144bc50f2f4f10a7dc67ea4077df0b817846611303865ddec31c5b5b24d968dad180c9077fbf83cb1631b6850785f5f</sha384>
+    <sha512>0e60357d329a443046b322fb4468d334d7ccc26b7328aefc1c1c83d2e5b509d6c974aa08164a0c4bd0b9477bde33ff0e28df39f22bd322c8feee0f66eac4568b</sha512>
     <maintainer>Stefan Schulz</maintainer>
     <maintainerurl>https://www.the-loom.de</maintainerurl>
     <targetplatform name="joomla" version="(5.(1|2|3|4|5)|6.(0|1|2|3))"/>
